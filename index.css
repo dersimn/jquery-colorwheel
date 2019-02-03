@@ -1,0 +1,10 @@
+.wrapper {
+    background-color: lightgrey;
+    width: 50%;
+    height: 500px;
+}
+
+.colorpicker {
+    width: 500px;
+    height: 500px;
+}
