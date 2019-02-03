@@ -3,10 +3,13 @@
         const settings = $.extend({
             rotatable: true,
             magnifyingArc: 15 * Math.PI/180,
-            wheelThickness: 0.4
+            wheelThickness: 0.4,
+            emitEvents: true
         }, options);
 
         return this.each(function() {
+            const self = this;
+
             const canvas = $(this).get(0);
 
             const dpr = window.devicePixelRatio || 1;
@@ -71,6 +74,10 @@
                 let degreeOffset = 0;
                 let lastDegree = 0;
 
+                function absoluteAngle(ang) {
+                    return ((ang%360 < 0) ? (360 + ang%360) : (ang%360))
+                }
+
                 function calcRotation(x, y) {
                     var mouse_x = x - offset.x;
                     var mouse_y = y - offset.y;
@@ -90,6 +97,8 @@
 
                     dragging = false;
                     lastDegree = currentDegree-degreeOffset+lastDegree;
+
+                    if (settings.emitEvents) $(self).trigger('colorChange', [absoluteAngle(lastDegree), true]);
                 }
                 function rotationDo(x, y) {
                     let currentDegree = calcRotation(x, y);
@@ -97,9 +106,8 @@
 
                     if (dragging) {
                         drawColorwheel(calc);
+                        if (settings.emitEvents) $(self).trigger('colorChange', [absoluteAngle(calc), false]);
                     }
-
-                    $('#debug').text('degreeOffset: '+degreeOffset+'\nlastDegree: '+lastDegree+'\ncurrentDegree: '+currentDegree+'\ncalc: '+calc);
                 }
 
                 // Mouse
