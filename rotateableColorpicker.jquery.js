@@ -1,5 +1,11 @@
 (function( $ ) {
-    $.fn.colorwheel = function() {
+    $.fn.colorwheel = function(options) {
+        const settings = $.extend({
+            rotatable: true,
+            magnifyingArc: 15 * Math.PI/180,
+            wheelThickness: 0.4
+        }, options);
+
         return this.each(function() {
             const canvas = $(this).get(0);
 
@@ -16,7 +22,7 @@
                 y: canvas.height/2/dpr
             };
             const radius = (canvas.width > canvas.height) ? canvas.height/2/dpr : canvas.width/2/dpr;
-            const thickness = 0.4;
+            const thickness = settings.wheelThickness;
 
             function drawColorwheel(startHue = 0) {
                 // Color Wheel
@@ -38,82 +44,86 @@
                 context.fill();
 
                 // Magnifying Arc
-                let magnifierArc = 15;
-                context.beginPath();
-                context.arc(offset.x, offset.y, radius/2, -1*magnifierArc*Math.PI/180, magnifierArc*Math.PI/180, false);
-                context.lineWidth = radius;
-                context.strokeStyle = 'hsl('+startHue+', 100%, 50%)';
-                context.stroke();
+                if (settings.magnifyingArc) {
+                    const arcSize = settings.magnifyingArc;
 
-                // Black stroke enveloping inner circle and mag. arc
-                context.lineWidth = radius/100;
-                context.strokeStyle = 'hsl(0, 100%, 0%)';
+                    context.beginPath();
+                    context.arc(offset.x, offset.y, radius/2, -1*arcSize, arcSize, false);
+                    context.lineWidth = radius;
+                    context.strokeStyle = 'hsl('+startHue+', 100%, 50%)';
+                    context.stroke();
 
-                context.beginPath();
-                // Around inner circle
-                context.arc(offset.x, offset.y, radius*(1-thickness-0.1), magnifierArc*Math.PI/180, -1*magnifierArc*Math.PI/180, false);
-                // Around outer circle
-                context.arc(offset.x, offset.y, radius-context.lineWidth/2, -1*magnifierArc*Math.PI/180, magnifierArc*Math.PI/180, false);
-                context.closePath(); // Close last piece
-                context.stroke();
+                    // Black stroke enveloping inner circle and mag. arc
+                    context.lineWidth = radius/100;
+                    context.strokeStyle = 'black';
+
+                    context.beginPath();
+                    context.arc(offset.x, offset.y, radius*(1-thickness-0.1), arcSize, -1*arcSize, false); // Around inner circle
+                    context.arc(offset.x, offset.y, radius-context.lineWidth/2, -1*arcSize, arcSize, false); // Around outer circle
+                    context.closePath(); // Close last piece
+                    context.stroke();
+                }
             }
             drawColorwheel();
 
-            // Touch
-            let dragging = false;
-            let degreeOffset = 0;
-            let lastDegree = 0;
+            if (settings.rotatable) {
+                let dragging = false;
+                let degreeOffset = 0;
+                let lastDegree = 0;
 
-            function calcRotation(x, y) {
-                var mouse_x = x - offset.x;
-                var mouse_y = y - offset.y;
-                
-                var radians = Math.atan2(mouse_x, mouse_y);
-                var degree = radians * 180/Math.PI;
+                function calcRotation(x, y) {
+                    var mouse_x = x - offset.x;
+                    var mouse_y = y - offset.y;
+                    
+                    var radians = Math.atan2(mouse_x, mouse_y);
+                    var degree = radians * 180/Math.PI;
 
-                return degree;            
-            };
+                    return degree;            
+                };
 
-            function rotationBegin(x, y) {
-                dragging = true;
-                degreeOffset = calcRotation(x, y);
-            }
-            function rotationEnd(x, y) {
-                let currentDegree = calcRotation(x, y);
+                function rotationBegin(x, y) {
+                    dragging = true;
+                    degreeOffset = calcRotation(x, y);
+                }
+                function rotationEnd(x, y) {
+                    let currentDegree = calcRotation(x, y);
 
-                dragging = false;
-                lastDegree = currentDegree-degreeOffset+lastDegree;
-            }
-            function rotationDo(x, y) {
-                let currentDegree = calcRotation(x, y);
-                let calc = currentDegree-degreeOffset+lastDegree;
+                    dragging = false;
+                    lastDegree = currentDegree-degreeOffset+lastDegree;
+                }
+                function rotationDo(x, y) {
+                    let currentDegree = calcRotation(x, y);
+                    let calc = currentDegree-degreeOffset+lastDegree;
 
-                if (dragging) {
-                    drawColorwheel(calc);
+                    if (dragging) {
+                        drawColorwheel(calc);
+                    }
+
+                    $('#debug').text('degreeOffset: '+degreeOffset+'\nlastDegree: '+lastDegree+'\ncurrentDegree: '+currentDegree+'\ncalc: '+calc);
                 }
 
-                $('#debug').text('degreeOffset: '+degreeOffset+'\nlastDegree: '+lastDegree+'\ncurrentDegree: '+currentDegree+'\ncalc: '+calc);
+                // Mouse
+                $(this).bind('mousedown', function(e) {
+                    rotationBegin(e.pageX, e.pageY);
+                });
+                $(document).bind('mouseup', function(e) {
+                    rotationEnd(e.pageX, e.pageY);
+                });
+                $(document).bind('mousemove', function(e) {
+                    rotationDo(e.pageX, e.pageY);
+                });
+
+                // Touch
+                $(this).bind('touchstart', function(e) {
+                    rotationBegin(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
+                });
+                $(this).bind('touchend', function(e) {
+                    rotationEnd(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
+                });
+                $(this).bind('touchmove', function(e) {
+                    rotationDo(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
+                });
             }
-
-            $(this).bind('mousedown', function(e) {
-                rotationBegin(e.pageX, e.pageY);
-            });
-            $(document).bind('mouseup', function(e) {
-                rotationEnd(e.pageX, e.pageY);
-            });
-            $(document).bind('mousemove', function(e) {
-                rotationDo(e.pageX, e.pageY);
-            });
-
-            $(this).bind('touchstart', function(e) {
-                rotationBegin(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
-            });
-            $(this).bind('touchend', function(e) {
-                rotationEnd(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
-            });
-            $(this).bind('touchmove', function(e) {
-                rotationDo(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
-            });
         });
     };
 }( jQuery ));
