@@ -38,29 +38,58 @@ $(function() {
 
         // Touch
         let dragging = false;
+        let degreeOffset = 0;
+        let lastDegree = 0;
 
-        var MouseDown = function(e) {
-            dragging = true;
-        };
-        var MouseUp = function() {
-            dragging = false;  
-        };
-        var MouseMove = function(e) {
-            var mouse_x = e.pageX - offset.x;
-            var mouse_y = e.pageY - offset.y;
+        function calcRotation(x, y) {
+            var mouse_x = x - offset.x;
+            var mouse_y = y - offset.y;
             
             var radians = Math.atan2(mouse_x, mouse_y);
             var degree = radians * 180/Math.PI;
-            
-            $("#debug").text("X: "+mouse_x+"\nY: "+mouse_y+"\nrad: "+radians+"\ndeg: "+degree);
 
-            if (dragging) {
-                drawColorwheel(degree-90);
-            }
+            return degree;            
         };
 
-        $(this).bind("mousedown", MouseDown);
-        $(document).bind("mouseup", MouseUp);
-        $(document).bind("mousemove", MouseMove);
+        function rotationBegin(x, y) {
+            dragging = true;
+            degreeOffset = calcRotation(x, y);
+        }
+        function rotationEnd(x, y) {
+            let currentDegree = calcRotation(x, y);
+
+            dragging = false;
+            lastDegree = currentDegree-degreeOffset+lastDegree;
+        }
+        function rotationDo(x, y) {
+            let currentDegree = calcRotation(x, y);
+            let calc = currentDegree-degreeOffset+lastDegree;
+
+            if (dragging) {
+                drawColorwheel(calc);
+            }
+
+            $("#debug").text("degreeOffset: "+degreeOffset+"\nlastDegree: "+lastDegree+"\ncurrentDegree: "+currentDegree+'\ncalc: '+calc);
+        }
+
+        $(this).bind("mousedown", function(e) {
+            rotationBegin(e.pageX, e.pageY);
+        });
+        $(document).bind("mouseup", function(e) {
+            rotationEnd(e.pageX, e.pageY);
+        });
+        $(document).bind("mousemove", function(e) {
+            rotationDo(e.pageX, e.pageY);
+        });
+
+        $(this).bind("touchstart", function(e) {
+            rotationBegin(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
+        });
+        $(this).bind("touchend", function(e) {
+            rotationEnd(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
+        });
+        $(this).bind("touchmove", function(e) {
+            rotationDo(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
+        });
     });
 });
