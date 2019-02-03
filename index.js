@@ -18,6 +18,7 @@ $(function() {
         const thickness = 0.4;
 
         function drawColorwheel(startHue = 0) {
+            // Color Wheel
             for (var angle = startHue; angle <= 360+startHue; angle++) {
                 const startAngle = (angle - 2) * Math.PI/180;
                 const endAngle = angle * Math.PI/180;
@@ -28,11 +29,32 @@ $(function() {
                 context.stroke();
             }
 
+            // Inner color circle
             context.beginPath();
             context.arc(offset.x, offset.y, radius*(1-thickness-0.1), 0, 2*Math.PI, false);
             context.closePath();
             context.fillStyle = 'hsl('+startHue+', 100%, 50%)';
             context.fill();
+
+            // Magnifying Arc
+            let magnifierArc = 15;
+            context.beginPath();
+            context.arc(offset.x, offset.y, radius/2, -1*magnifierArc*Math.PI/180, magnifierArc*Math.PI/180, false);
+            context.lineWidth = radius;
+            context.strokeStyle = 'hsl('+startHue+', 100%, 50%)';
+            context.stroke();
+
+            // Black stroke enveloping inner circle and mag. arc
+            context.lineWidth = radius/100;
+            context.strokeStyle = 'hsl(0, 100%, 0%)';
+
+            context.beginPath();
+            // Around inner circle
+            context.arc(offset.x, offset.y, radius*(1-thickness-0.1), magnifierArc*Math.PI/180, -1*magnifierArc*Math.PI/180, false);
+            // Around outer circle
+            context.arc(offset.x, offset.y, radius-context.lineWidth/2, -1*magnifierArc*Math.PI/180, magnifierArc*Math.PI/180, false);
+            context.closePath(); // Close last piece
+            context.stroke();
         }
         drawColorwheel();
 
