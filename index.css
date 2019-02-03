@@ -8,3 +8,8 @@
     width: 500px;
     height: 500px;
 }
+
+.debug {
+    background-color: lightgrey;
+    height: 300px;
+}
