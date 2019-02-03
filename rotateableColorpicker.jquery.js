@@ -122,14 +122,28 @@
                 });
 
                 // Touch
+                function recoverOffsetValues(e) {
+                    // https://stackoverflow.com/a/11396681/1997890
+                    var rect = e.target.getBoundingClientRect();
+                    var bodyRect = document.body.getBoundingClientRect();
+                    var x = e.originalEvent.changedTouches[0].pageX - (rect.left - bodyRect.left);
+                    var y = e.originalEvent.changedTouches[0].pageY - (rect.top - bodyRect.top);
+
+                    return [x, y];
+                }
                 $(this).bind('touchstart', function(e) {
-                    rotationBegin(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
+                    [x, y] = recoverOffsetValues(e);
+                    rotationBegin(x, y);
                 });
                 $(this).bind('touchend', function(e) {
-                    rotationEnd(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
+                    [x, y] = recoverOffsetValues(e);
+                    rotationEnd(x, y);
                 });
                 $(this).bind('touchmove', function(e) {
-                    rotationDo(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
+                    e.preventDefault();
+
+                    [x, y] = recoverOffsetValues(e);
+                    rotationDo(x, y);
                 });
             }
         });
