@@ -1,10 +1,18 @@
 $(function() {
     $('.colorpicker').each(function(e) {
         let canvas = $(this).get(0);
+
+        var dpr = window.devicePixelRatio || 1;
+        var rect = canvas.getBoundingClientRect(); // Get the size of the canvas in CSS pixels.
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+
         var context = canvas.getContext("2d");
-        var x = canvas.width / 2;
-        var y = canvas.height / 2;
-        var radius = (canvas.width > canvas.height) ? canvas.height/2 : canvas.width/2;
+        context.scale(dpr, dpr);
+
+        var x = canvas.width/2/dpr;
+        var y = canvas.height/2/dpr;
+        var radius = (canvas.width > canvas.height) ? canvas.height/2/dpr : canvas.width/2/dpr;
         var thickness = 0.4;
 
         console.log(canvas.width, canvas.height);
