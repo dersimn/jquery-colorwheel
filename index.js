@@ -7,7 +7,7 @@ $(function() {
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
 
-        const context = canvas.getContext("2d");
+        const context = canvas.getContext('2d');
         context.scale(dpr, dpr);
 
         const offset = {
@@ -91,26 +91,26 @@ $(function() {
                 drawColorwheel(calc);
             }
 
-            $("#debug").text("degreeOffset: "+degreeOffset+"\nlastDegree: "+lastDegree+"\ncurrentDegree: "+currentDegree+'\ncalc: '+calc);
+            $('#debug').text('degreeOffset: '+degreeOffset+'\nlastDegree: '+lastDegree+'\ncurrentDegree: '+currentDegree+'\ncalc: '+calc);
         }
 
-        $(this).bind("mousedown", function(e) {
+        $(this).bind('mousedown', function(e) {
             rotationBegin(e.pageX, e.pageY);
         });
-        $(document).bind("mouseup", function(e) {
+        $(document).bind('mouseup', function(e) {
             rotationEnd(e.pageX, e.pageY);
         });
-        $(document).bind("mousemove", function(e) {
+        $(document).bind('mousemove', function(e) {
             rotationDo(e.pageX, e.pageY);
         });
 
-        $(this).bind("touchstart", function(e) {
+        $(this).bind('touchstart', function(e) {
             rotationBegin(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
         });
-        $(this).bind("touchend", function(e) {
+        $(this).bind('touchend', function(e) {
             rotationEnd(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
         });
-        $(this).bind("touchmove", function(e) {
+        $(this).bind('touchmove', function(e) {
             rotationDo(e.originalEvent.changedTouches[0].pageX, e.originalEvent.changedTouches[0].pageY);
         });
     });
