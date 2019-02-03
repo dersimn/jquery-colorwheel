@@ -112,13 +112,13 @@
 
                 // Mouse
                 $(this).bind('mousedown', function(e) {
-                    rotationBegin(e.pageX, e.pageY);
+                    rotationBegin(e.offsetX, e.offsetY);
                 });
-                $(document).bind('mouseup', function(e) {
-                    rotationEnd(e.pageX, e.pageY);
+                $(this).bind('mouseup', function(e) {
+                    rotationEnd(e.offsetX, e.offsetY);
                 });
-                $(document).bind('mousemove', function(e) {
-                    rotationDo(e.pageX, e.pageY);
+                $(this).bind('mousemove', function(e) {
+                    rotationDo(e.offsetX, e.offsetY);
                 });
 
                 // Touch
