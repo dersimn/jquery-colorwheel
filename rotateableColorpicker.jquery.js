@@ -75,7 +75,7 @@
             if (settings.rotatable) {
                 let dragging = false;
                 let degreeOffset = 0;
-                let lastDegree = 0;
+                let lastDegree = settings.startHue;
 
                 function absoluteAngle(ang) {
                     return ((ang%360 < 0) ? (360 + ang%360) : (ang%360))
