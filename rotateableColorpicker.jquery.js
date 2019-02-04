@@ -28,6 +28,8 @@
             const thickness = settings.wheelThickness;
 
             function drawColorwheel(startHue = 0) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                
                 // Color Wheel
                 for (var angle = startHue; angle <= 360+startHue; angle++) {
                     const startAngle = (angle - 2) * Math.PI/180;
