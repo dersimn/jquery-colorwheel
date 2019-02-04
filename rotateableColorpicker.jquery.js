@@ -4,7 +4,8 @@
             rotatable: true,
             magnifyingArc: 15 * Math.PI/180,
             wheelThickness: 0.4,
-            emitEvents: true
+            emitEvents: true,
+            startHue: 0
         }, options);
 
         return this.each(function() {
@@ -69,7 +70,7 @@
                     context.stroke();
                 }
             }
-            drawColorwheel();
+            drawColorwheel(settings.startHue);
 
             if (settings.rotatable) {
                 let dragging = false;
